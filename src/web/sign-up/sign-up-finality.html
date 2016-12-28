@@ -1,0 +1,53 @@
+<section class="signup-finality" layout="column" layout-align="start center">
+  <h2 md-colors="{color: 'accent-700'}">{{$ctrl.user.mail}}</h2>
+  <h4>Step 3 of 3</h4>
+  <h4>Create Account</h4>
+  <h4 class="consent-title" md-colors="{color: 'warn-500'}">Please read and acknowledge, if you agree with the following:</h4>
+  <table>
+    <tr>
+      <td class="check">
+        <md-checkbox ng-model="$ctrl.consent.passLoss" aria-label="info" tabindex="12">
+		    </md-checkbox>
+      </td>
+      <td class="check-info">
+ 			  <span ng-if="!$ctrl.consent.passLoss">I understand that, if I loose my Storage password, I will not be able to open and use my files.</span>
+			  <span ng-if="$ctrl.consent.passLoss" md-colors="{color: 'accent-900'}">I understand that, if I loose my Storage password, I will not be able to open and use my files.</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="check">
+        <md-checkbox ng-model="$ctrl.consent.onPaper" aria-label="info" tabindex="13">
+		    </md-checkbox>
+      </td>
+       <td class="check-info">
+ 			  <span ng-if="!$ctrl.consent.onPaper">I have both of my passwords written on paper. I will keep this paper as secure as the most precious physical object of my life, as my passwords guard my digital life.</span>
+			  <span ng-if="$ctrl.consent.onPaper" md-colors="{color: 'accent-900'}">I have both of my passwords written on paper. I will keep this paper as secure as the most precious physical object of my life, as my passwords guard my digital life.</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="check">
+        <md-checkbox ng-model="$ctrl.consent.secondCopy" aria-label="info" tabindex="14">
+		    </md-checkbox>
+      </td>
+       <td class="check-info">
+  		  <span ng-if="!$ctrl.consent.secondCopy">I will make a copy of my passwords, and store it securely with my trusted family member, my friend, or my lawyer.</span>
+			  <span ng-if="$ctrl.consent.secondCopy" md-colors="{color: 'accent-900'}">I will make a copy of my passwords, and store it securely with my trusted family member, my friend, or my lawyer.</span>
+      </td>
+      </td>
+    </tr>
+  </table>
+  <div class="button-wrap create-account-btn" layout="row" layout-align="center center">
+			<md-button ng-disabled="!($ctrl.consent.passLoss && $ctrl.consent.onPaper && $ctrl.consent.secondCopy)" ng-click="$ctrl.createAccount()" class="md-primary md-raised" tabindex="15">
+				Create Account
+			</md-button>
+  </div>
+  <div ng-if="(!$ctrl.created) && ($ctrl.created !== null)" class="create-msg" layout="column" layout-align="start center" md-colors="{color: 'grey-800', background: 'red-200'}">
+    <h5>
+      Unfortunately, address {{$ctrl.user.mail}} already set up!<br>
+      Restart Sign Up!
+    </h5>
+    <md-button class="md-primary md-raised" ng-click="$ctrl.reloadSignUp()" tabindex="16">
+      OK
+    </md-button>
+  </div>
+</section>

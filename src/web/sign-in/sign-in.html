@@ -1,0 +1,111 @@
+<section class="signIn" layout="column" layout-align="start center">
+  <img src="./templates/images/3NWeb.png">
+  <form  name="signInForm" 
+      class="sign-in-module" 
+      layout="column" 
+      layout-align="start center">
+    
+    <div class="input-wrap">
+      <md-input-container>
+        <label>Enter your Login (mail address)</label>
+        <input type="text" 
+            name="username" 
+            ng-model="$ctrl.user.mail" 
+            required 
+            minlength="6" 
+            ng-focus="$ctrl.startSignIn()"
+            ng-keyup="$ctrl.preCheckName($event)">
+        <span class="error" 
+            ng-if="($ctrl.loginError !== null) && ($ctrl.step === 1)">
+          {{$ctrl.loginError}}
+        </span>
+      </md-input-container>
+      <md-button ng-if="(($ctrl.user.mail.length > $ctrl.nameMinLength) && ($ctrl.user.mail.indexOf('@') !== -1) && ($ctrl.step === 1))" 
+          aria-label="done" 
+          md-colors="{background: 'blue-grey-100'}" 
+          ng-click="$ctrl.checkName()">
+        <ng-md-icon icon="done" size="24"></md-icon>
+      </md-button>
+    </div>
+    
+    <div class="input-wrap">
+      <md-input-container ng-if="!$ctrl.isFound">
+        <label>Enter your Login password</label>
+        <input type="password" 
+            name="loginPass" 
+            ng-model="$ctrl.user.password" 
+            ng-keyup="$ctrl.preCheckPassword($event)" 
+            ng-disabled="$ctrl.step < 2">
+        <span class="error" 
+            ng-if="($ctrl.loginError !== null) && ($ctrl.step === 2)">
+          {{$ctrl.loginError}}
+        </span>      
+      </md-input-container>
+      <md-button ng-if="(($ctrl.user.password.length >= $ctrl.passMinLength) && ($ctrl.step === 2))" 
+          aria-label="done" 
+          md-colors="{background: 'blue-grey-100'}"
+          ng-click="$ctrl.checkPassword()">
+        <ng-md-icon icon="done" size="24"></md-icon>
+      </md-button>
+    </div>
+    
+    <div class="input-wrap">
+      <md-input-container>
+        <label>Enter your Storage password</label>
+        <input type="password" 
+            name="storagePass" 
+            ng-model="$ctrl.user.storPassword"
+            ng-keyup="$ctrl.preCheckStorPassword($event)" 
+            ng-disabled="$ctrl.step < 3">
+        <span class="error" 
+            ng-if="($ctrl.loginError !== null) && ($ctrl.step === 3)">
+          {{$ctrl.loginError}}
+        </span> 
+      </md-input-container>
+      <md-button ng-if="(($ctrl.user.storPassword.length >= $ctrl.passMinLength) && ($ctrl.step === 3))" 
+         aria-label="done" 
+         md-colors="{background: 'blue-grey-100'}"
+         ng-click="$ctrl.checkStorPassword()">
+        <ng-md-icon icon="done" size="24"></md-icon>
+      </md-button>
+    </div>
+    
+  </form>
+  
+  <div class="login-msg" 
+      ng-class="{loginMsgActive: $ctrl.isFound === true}">
+    Пользователь {{$ctrl.user.mail}} уже пользовался данным приложением и шаг проверки Login password будет пропущен!
+  </div>
+  
+  <div ng-if="$ctrl.isWait" 
+      class="wait" 
+      layout="row" 
+      layout-align="center center">
+    <md-progress-circular md-mode="indeterminate" 
+        md-diameter="80px">
+    </md-progress-circular>
+  </div>
+  
+  <div ng-if="$ctrl.generationProgress !== null" 
+      class="wait"
+      layout="row" 
+      layout-align="center center">
+    <md-progress-circular md-mode="determinate" 
+        md-diameter="80px" 
+        value="{{$ctrl.generationProgress}}">
+    </md-progress-circular>
+    <span class="progress">
+      {{$ctrl.generationProgress}}%
+    </span>
+  </div>
+  
+  <div class="add-sign-up" 
+      layout="column" 
+      layout-align="start center">
+    <p>Need a new Account?</p>
+    <md-button class="md-raised md-primary" 
+        ng-click="$ctrl.goSignUp()">
+      Sign Up
+    </md-button>
+  </div>
+</section>
