@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2016 3NSoft Inc.
+ Copyright (C) 2016 - 2017 3NSoft Inc.
 
  This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -15,7 +15,6 @@ export let ModuleName = "3nweb.components.sign-up";
 let tmplts = [
   "./templates/sign-up/sign-up-address.html",
   "./templates/sign-up/sign-up-password.html",
-  "./templates/sign-up/sign-up-password-storage.html",
   "./templates/sign-up/sign-up-finality.html",
 ];
 
@@ -57,7 +56,6 @@ class Controller {
       name: "",
       mail: "",
       password: "",
-      storPassword: ""
     };
     this.passwordConfirm = "";
     this.passwordConfirmed = false;
@@ -193,7 +191,7 @@ class Controller {
   generateLoginKey(): void {
     this.step = 3;
     let deferred = this.$q.defer<void>();
-    this.signUp.createMailerIdParams(this.user.password, deferred.notify)
+    this.signUp.createUserParams(this.user.password, deferred.notify)
       .then(deferred.resolve, deferred.reject);
        
     deferred.promise
@@ -209,75 +207,6 @@ class Controller {
       });
   };
   
-  /* методы, касающиеся Storage password */
-  preStorNext(event): void {
-    let keycode = event.keyCode || event.which;
-    if (keycode === 13) {
-      if ((this.user.storPassword !== undefined) && 
-        (this.user.storPassword !== null) && 
-        (this.user.storPassword.length >= this.passMinLength) &&
-        (this.step === 1)) {
-        this.storNext();
-      }   
-    }   
-  };
-  
-  storNext(): void {
-    this.step = 2;
-    this.passwordConfirmed = false;
-    this.$timeout(() => {
-      this.htmlElements = angular.element(document).find("input");
-      this.htmlElements[1].focus();
-    });
-  };
-  
-  checkStorPassword(): void {
-    let passwordPart = "";
-    if (this.passwordConfirm.length < this.user.storPassword.length) {
-      passwordPart = this.user.storPassword.substr(0,this.passwordConfirm.length);
-      this.error.passwordConfirm = (this.passwordConfirm === passwordPart) ? false : true;
-      this.passwordConfirmed = false;
-    }
-    if (this.passwordConfirm.length === this.user.storPassword.length) {
-      if (this.passwordConfirm === this.user.storPassword) {
-        this.error.passwordConfirm = false;
-        this.passwordConfirmed = true;
-      }
-    }
-    if (this.passwordConfirm.length > this.user.storPassword.length) {
-      this.error.passwordConfirm = true;
-      this.passwordConfirmed = false;
-    }
-  };
-  
-  preGenerateSrorageKey(event): void {
-    let keycode = event.keyCode || event.which;
-    if (keycode === 13) {
-      if ((this.passwordConfirmed === true) && 
-        (this.step === 2)) {
-        this.generateSrorageKey();
-      }   
-    }   
-  }; 
-  
-  generateSrorageKey(): void {
-    this.step = 3;
-    let deferred = this.$q.defer<void>();
-    this.signUp.createStorageParams(this.user.password, deferred.notify)
-      .then(deferred.resolve, deferred.reject);
-       
-    deferred.promise
-      .then((paramsAndKey) => {
-        this.currentTmpl = tmplts[3];
-        this.step = 1;
-        this.generationProgress = null;
-      }, (err) => {
-        console.error(err);
-      }, (progress: number) => {
-        this.generationProgress = progress;
-      });
-  };   
-
   /* методы, касающиеся окончания процедуры Sign Up */
   createAccount(): void {
     this.isWait = true;

@@ -29,8 +29,8 @@
     </div>
     
     <div class="input-wrap">
-      <md-input-container ng-if="!$ctrl.isFound">
-        <label>Enter your Login password</label>
+      <md-input-container>
+        <label>Enter your password</label>
         <input type="password" 
             name="loginPass" 
             ng-model="$ctrl.user.password" 
@@ -48,34 +48,8 @@
         <ng-md-icon icon="done" size="24"></md-icon>
       </md-button>
     </div>
-    
-    <div class="input-wrap">
-      <md-input-container>
-        <label>Enter your Storage password</label>
-        <input type="password" 
-            name="storagePass" 
-            ng-model="$ctrl.user.storPassword"
-            ng-keyup="$ctrl.preCheckStorPassword($event)" 
-            ng-disabled="$ctrl.step < 3">
-        <span class="error" 
-            ng-if="($ctrl.loginError !== null) && ($ctrl.step === 3)">
-          {{$ctrl.loginError}}
-        </span> 
-      </md-input-container>
-      <md-button ng-if="(($ctrl.user.storPassword.length >= $ctrl.passMinLength) && ($ctrl.step === 3))" 
-         aria-label="done" 
-         md-colors="{background: 'blue-grey-100'}"
-         ng-click="$ctrl.checkStorPassword()">
-        <ng-md-icon icon="done" size="24"></md-icon>
-      </md-button>
-    </div>
-    
+
   </form>
-  
-  <div class="login-msg" 
-      ng-class="{loginMsgActive: $ctrl.isFound === true}">
-    Пользователь {{$ctrl.user.mail}} уже пользовался данным приложением и шаг проверки Login password будет пропущен!
-  </div>
   
   <div ng-if="$ctrl.isWait" 
       class="wait" 

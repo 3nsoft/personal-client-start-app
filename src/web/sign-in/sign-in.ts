@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2016 3NSoft Inc.
+ Copyright (C) 2016 - 2017 3NSoft Inc.
 
  This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -15,7 +15,7 @@ export interface User {
   name: string;
   mail: string;
   password: string;
-  storPassword: string;
+  // storPassword: string;
 }
 
 class Controller {
@@ -41,7 +41,6 @@ class Controller {
       name: null,
       mail: null,
       password: null,
-      storPassword: null
     };
     this.step = 1;
     this.isWait = false;
@@ -66,7 +65,6 @@ class Controller {
       name: null,
       mail: null,
       password: null,
-      storPassword: null      
     };  
   };
   
@@ -89,22 +87,20 @@ class Controller {
     this.signIn.getUsersOnDisk()
       .then((users) => {
         console.log(JSON.stringify(users));
-        for(let user of users) {
-          if (this.user.mail === user) {
-            this.isFound = true;
-          }
+        if (users.find(user => (this.user.mail === user))) {
+          this.isFound = true;
         }
          if (this.isFound) {
-           this.step = 3;
+           this.step = 2;
            this.isWait = false;
            this.$timeout(() => {
              this.inputElements[0].blur();
            });           
            this.$timeout(() => {
-             this.inputElements[2].focus();
+             this.inputElements[1].focus();
            });           
          } else {
-           return this.$q.when(<any>this.signIn.startMidProvisioning(this.user.mail))
+           return this.$q.when(<any>this.signIn.startLoginToRemoteStorage(this.user.mail))
             .then((mailIsKnown: boolean) => {
               if (mailIsKnown) {
                 this.isWait = false;
@@ -153,8 +149,11 @@ class Controller {
   
   checkPassword(): void {
     let deferred = this.$q.defer<boolean>();
-    this.signIn.completeMidProvisioning(this.user.password, deferred.notify)
-      .then(deferred.resolve, deferred.reject);
+
+    (this.isFound ?
+      this.signIn.useExistingStorage(this.user.mail, this.user.password, deferred.notify) :
+      this.signIn.completeLoginAndLocalSetup(this.user.password, deferred.notify))
+    .then(deferred.resolve, deferred.reject);
       
     deferred.promise
       .then((passOK) => {
@@ -162,9 +161,6 @@ class Controller {
         if (passOK) {
           this.step = 3;
           this.generationProgress = null;
-          this.$timeout(() => {
-            this.inputElements[2].focus();
-          });
         } else {
           this.loginError = "Password is incorrect!";
           this.$timeout(() => {
@@ -177,47 +173,6 @@ class Controller {
         this.$timeout(() => {
           this.inputElements[1].focus();
         });       
-      }, (progress: number) => {
-        this.generationProgress = progress;
-      });
-  };
-  
-  preCheckStorPassword(event): void {
-    let keycode = event.keyCode || event.which;
-    if (keycode === 13) {
-      if ((this.user.storPassword !== undefined) && 
-        (this.user.storPassword !== null) && 
-        (this.user.storPassword.length > 0) && 
-        (this.step === 3)) {
-        this.checkStorPassword();
-      } 
-    }
-  };
-  
-  checkStorPassword(): void {
-    this.inputElements[2].blur();
-    let deferred = this.$q.defer<boolean>();
-    this.signIn.setupStorage(this.user.mail, this.user.storPassword, deferred.notify)
-      .then(deferred.resolve, deferred.reject);
-      
-    deferred.promise
-      .then((passOK) => {
-        this.user.password = "";
-        if (passOK) {
-          this.step = 4;
-          this.generationProgress = null;
-        } else {
-          this.loginError = "Password is incorrect!";
-          this.$timeout(() => {
-            this.inputElements[2].focus();
-          });          
-        }
-      }, (err) => {
-        console.error(err);
-        this.loginError = "Unknown error!";
-          this.$timeout(() => {
-            this.inputElements[2].focus();
-          });        
       }, (progress: number) => {
         this.generationProgress = progress;
       });
