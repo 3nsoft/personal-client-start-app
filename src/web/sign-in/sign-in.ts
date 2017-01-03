@@ -48,7 +48,7 @@ class Controller {
     this.loginError = null;
     this.generationProgress = null;
     this.nameMinLength = 6;
-    this.passMinLength = 1;
+    this.passMinLength = 12;
     
     $timeout(() => {
      (<HTMLInputElement>document.querySelector("input[name='username']")).focus(); 

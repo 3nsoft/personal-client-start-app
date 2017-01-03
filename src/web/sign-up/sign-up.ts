@@ -75,7 +75,7 @@ class Controller {
     
     this.nameMinLength = 6;
     this.nameMaxLength = 60;
-    this.passMinLength = 1;
+    this.passMinLength = 12;
   }
   
   /* методы, касающися проверки имени пользователя */
