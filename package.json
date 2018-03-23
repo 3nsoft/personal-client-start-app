@@ -1,22 +1,22 @@
 {
   "name": "3n-startup-app",
-  "version": "0.2.1",
-  "description": "3N SratrUp App",
-  "author": "3N Soft",
+  "version": "0.2.0",
+  "description": "3NWeb platform desktop startup app",
+  "author": "3NSoft, Inc.",
   "license": "GPL-3.0",
   "dependencies": {
     "browser-sync": "2.11.1",
     "browserify": "^13.0.0",
     "del": "2.2.0",
-    "gulp-concat-css": "^2.3.0",
-    "gulp-sass": "^2.3.0",
-    "gulp-shell": "^0.5.2",
+    "gulp-concat-css": "^3.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^1.5.2",
-    "gulp-typescript": "^3.1.2",
+    "gulp-typescript": "^4.0.1",
     "gulp-uglify": "^2.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "gulp": "github:gulpjs/gulp#4.0",
-    "typescript": "^2.0.3"
+    "vinyl-source-stream": "^2.0.0",
+    "gulp": "^4.0.0",
+    "typescript": "^2.7.1"
   },
   "scripts": {
     "gulp": "./node_modules/.bin/gulp"

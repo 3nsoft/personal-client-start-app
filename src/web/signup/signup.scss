@@ -1,0 +1,131 @@
+@import "./../config";
+
+.signup {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 56px 32px 16px 32px;
+  display: flex;
+  flex-direction: column;
+
+  &__logo {
+    position: relative;
+    width: 100%;
+    text-align: center;
+
+    img {
+      width: 190px;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    margin: 0 !important;
+    top: 2px;
+    right: 2px;
+  }
+
+  &__step {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 154px);
+
+    &-title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: $color12;
+      padding: 16px 0;
+    }
+
+    &-info {
+      font-size: 13px;
+      color: $color01;
+      padding-bottom: 8px;
+
+      p {
+        margin: 0;
+        line-height: 15px;
+      }
+
+      span, a {
+        color: $color12;
+      }
+
+      a {
+        text-decoration: underline;
+      }
+
+      md-checkbox {
+        margin-top: 20px;
+        margin-bottom: 0;
+
+        .md-container {
+          color: $color12;
+
+          .md-icon {
+            border-color: $color12;
+          }
+        }
+
+        .md-label {
+          font-size: 13px;
+          color: $color01;
+        }
+
+        &.md-checked {
+          .md-icon {
+            background-color: $color12;
+          }
+        }
+
+        &[disabled="disabled"] {
+          opacity: 0.54;
+        }
+      }
+    }
+
+    &--action {
+      text-align: center;
+      margin: 24px auto 12px auto;
+
+      button {
+        @include button3n($color12, #ffffff, false);
+      }
+    }
+
+    &--error-wrap {
+      text-align: center;
+      font-size: 13px;
+      color: $colorWarn;
+    }
+  }
+
+  &__inputfield {
+    input {
+      padding-right: 90px;
+    }
+
+    &--info {
+      position: absolute;
+      right: 2px;
+      bottom: 18px;
+      font-size: 14px;
+      font-style: italic;
+      color: $color02;
+    }
+  }
+
+  &__back {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding-top: 16px;
+
+    &--action {
+      @include button3n(#ffffff, $color12, true);
+      position: relative;
+      margin: 0 auto;
+    }
+  }
+}

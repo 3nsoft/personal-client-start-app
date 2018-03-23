@@ -9,12 +9,12 @@
 
 /// <reference path="../../typings/tsd.d.ts" />
 
-export let ModulName = "3nweb.services.toArray";
+export let ModuleName = "3nweb.services.toArray";
 
 export let ToArrayFilterName = "toArray";
 
 export function addFilter(angular: angular.IAngularStatic): void {
-  let mod = angular.module(ModulName, []);
+  let mod = angular.module(ModuleName, []);
   mod.filter(ToArrayFilterName, ToArray);
 }
 

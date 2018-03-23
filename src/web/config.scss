@@ -1,0 +1,27 @@
+$color01: rgba(0, 0, 0, 0.87);
+$color02: rgba(0, 0, 0, 0.54);
+$color12: #3675a8;
+$color14: #ffc765;
+$color18: #4faaf4;
+$colorWarn: #f44336;
+
+@mixin button3n($bgColor, $textColor, $border) {
+  font-weight: bold;
+	background-color: $bgColor;
+	color: $textColor !important;
+  padding: 0 16px;
+	cursor: pointer;
+
+	&:hover, &:focus {
+		background-color: darken($bgColor, 5%) !important;
+	}
+
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: lighten($bgColor, 20%) !important;
+  }
+
+  @if $border {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.32);
+  }
+}

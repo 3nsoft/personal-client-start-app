@@ -9,24 +9,160 @@
 
 /// <reference path="../../typings/tsd.d.ts" />
 
-export let ModulName = "3nweb.services.login-srv";
+export let ModuleName = "3nweb.services.login-srv";
 
 export let LoginSrvName = "loginService";
 
 export function addService(angular: angular.IAngularStatic): void {
-  let mod = angular.module(ModulName, []);
+  let mod = angular.module(ModuleName, []);
   mod.service(LoginSrvName, LoginSrv);
 }
 
 export class LoginSrv {
-  
-  constructor() {}
+  private _signInSrv: web3n.startup.SignInService;
+  private _signUpSrv: web3n.startup.SignUpService;
 
-  // TO DO функция только для тестирования
-  // позже функцию "чтения" ранее зарегистрированных пользователей
-  // необходимо будет переделать
-  readRegisteredUser(): string[] {
-    return ["vitaly@3nweb.com"];
+  static $inject = ['$q', '$timeout'];
+  constructor(
+    private $q: angular.IQService,
+    private $timeout: angular.ITimeoutService
+  ) {
+    this._signInSrv = w3n.signIn
+    this._signUpSrv = w3n.signUp
   }
+
+  /**
+   * read info about application users (on disk)
+   */
+  readRegisteredUser(): angular.IPromise<string[]> {
+    return this.$q.when(this._signInSrv.getUsersOnDisk())
+  }
+
+  /**
+   * get available addresses
+   * @param username {string}
+   * @return {angular.IPromise<string[]>}
+   */
+  getPossibleDomain(username: string): angular.IPromise<string[]> {
+    return this.$q.when(this._signUpSrv.getAvailableAddresses(username))
+  }
+
+  /**
+   * generate user secret keys
+   * @param password {string}
+   * @param cb {Function}
+   */
+  getLoginKey(password: string, cb: ((progress: number) => void)): angular.IPromise<void> {
+    return this.$q.when(this._signUpSrv.createUserParams(password, cb))
+  }
+
+  /**
+   * create new account
+   * @param login {string}
+   * @return {angular.IPromise<boolean>}
+   */
+  createNewAccount(login: string): angular.IPromise<boolean> {
+    return this.$q.when(this._signUpSrv.addUser(login))
+  }
+
+  private getLoginOnDisk(): angular.IPromise<string[]> {
+    return this.$q.when(this._signInSrv.getUsersOnDisk())
+  }
+
+  /**
+   * check login
+   * @param login {string}
+   * @return {angular.IPromise<boolean>}
+   */
+  private checkLogin(login: string): angular.IPromise<boolean> {
+    return this.$q.when(this._signInSrv.startLoginToRemoteStorage(login))
+  }
+
+  /**
+   * signin user if account is on disk
+   * @param login {string}
+   * @param password {string}
+   * @param cb {Function}
+   */
+  private signInFromDisk(login: string, password: string, cb: ((progress: number) => void)): angular.IPromise<boolean> {
+    return this.$q.when(this._signInSrv.useExistingStorage(login, password, cb))
+  }
+
+  /**
+   * signin user if account isn't on disk
+   * @param password {string}
+   * @param cb {Function}
+   */
+  private signInFromNet(password: string, cb: ((progress: number) => void)) {
+    return this.$q.when(this._signInSrv.completeLoginAndLocalSetup(password, cb))  
+  }
+
+
+  /**
+   * signin user if account isn't on disk
+   * @param login {string}
+   * @param password {string}
+   * @param cb {Function}
+   * @return {angular.IPromise<{success: boolean, error: string, errorType: 'login' | 'password' | undefined}}
+   */
+  signIn(login: string, password: string, cb: ((progress: number) => void)): angular.IPromise<{success: boolean, error: string, errorType: 'login' | 'password' | undefined}> {
+    return this.getLoginOnDisk()
+      .then(logins => {
+        if (logins.includes(login)) {
+          /* если пользователь уже пользовался данным приложением
+             и на диске имеется выбранный логин */
+          return this.signInFromDisk(login, password, cb)
+            .then(passOk => {
+              if (passOk) {
+                return {success: true, error: '', errorType: undefined}
+              } else {
+                return {success: false, error: 'Passwod is incorrect!', errorType: 'password'}
+              }
+            })
+            .catch(err => {
+              console.error(err)
+              return {success: false, error: 'Unknown error! Try again.', errorType: undefined}
+            })
+        } else {
+          return this.checkLogin(login)
+            .then(isAccountKnown => {
+              if (isAccountKnown) {
+                return this.signInFromNet(password, cb)
+                .then(passOk => {
+                    if (passOk) {
+                      return {success: true, error: '', errorType: undefined}
+                    } else {
+                      return {success: false, error: 'Passwod is incorrect!', errorType: 'password'}
+                    }
+                  })
+                  .catch(err => {
+                    console.error(err)
+                    return {success: false, error: 'Unknown error! Try again.', errorType: undefined}
+                  })
+              } else {
+                return {success: false, error: `Login ${login} is unknown!`, errorType: 'login'}
+              }
+            })
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        let errorText = 'Unknown error! Try again.'
+        let errorType = undefined
+
+        if (!!err.domainNotFound) {
+          errorText = 'Error. Domain fot found. Enter correct login.'
+          errorType = 'login'
+        }
+
+        if (!!err.noServiceRecord) {
+          errorText = `Error. Server doesn't 3N-protocol. Enter correct login.`
+          errorType = 'login'
+        }
+
+        return {success: false, error: errorText, errorType: errorType}
+      })
+  }
+
 
 }

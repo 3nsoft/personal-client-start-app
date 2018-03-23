@@ -9,12 +9,12 @@
 
 /// <reference path="../../typings/tsd.d.ts" />
 
-export let ModulName = "3nweb.services.cache";
+export let ModuleName = "3nweb.services.cache";
 
 export let CacheSrvName = "cacheService";
 
 export function addService(angular: angular.IAngularStatic): void {
-  let mod = angular.module(ModulName, []);
+  let mod = angular.module(ModuleName, []);
   mod.service(CacheSrvName, Cache);
 }
 

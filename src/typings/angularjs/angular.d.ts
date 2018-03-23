@@ -1052,7 +1052,7 @@ declare namespace angular {
          *
          * @param value Value or a promise
          */
-        when<T>(value: IPromise<T>|T): IPromise<T>;
+        when<T>(value: IPromise<T>|Promise<T>|T): IPromise<T>;
         /**
          * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
          */

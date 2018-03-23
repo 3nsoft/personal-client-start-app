@@ -9,84 +9,65 @@
 
 /// <reference path="../typings/tsd.d.ts" />
 
-import * as ArrayFilterMod from "./services/to-array";
-ArrayFilterMod.addFilter(angular);
+import * as ArrayFilterMod from "./services/to-array"
+ArrayFilterMod.addFilter(angular)
 
-import * as CacheSrvMod from "./services/cache-srv";
-CacheSrvMod.addService(angular);
+import * as CacheSrvMod from "./services/cache-srv"
+CacheSrvMod.addService(angular)
 
-import * as LoginSrvMod from './services/login-srv';
-LoginSrvMod.addService(angular);
+import * as LoginSrvMod from './services/login-srv'
+LoginSrvMod.addService(angular)
 
-import * as SignInCompMod from "./sign-in/sign-in";
-SignInCompMod.addComponent(angular);
+import * as SigninCompMod from './signin/signin'
+SigninCompMod.addComponent(angular)
 
-import * as SignUpCompMod from "./sign-up/sign-up";
-SignUpCompMod.addComponent(angular);
+import * as SignupCompMod from './signup/signup'
+SignupCompMod.addComponent(angular)
 
-let appModuleDependencies = [
+const appModuleDependencies = [
   "ui.router",
   "ngMaterial",
   "ngMdIcons",
   "ngMessages",
   "hmTouchEvents",
-  ArrayFilterMod.ModulName,
-  CacheSrvMod.ModulName,
-  LoginSrvMod.ModulName,
-  SignInCompMod.ModuleName,
-  SignUpCompMod.ModuleName
-];
+  ArrayFilterMod.ModuleName,
+  CacheSrvMod.ModuleName,
+  LoginSrvMod.ModuleName,
+  SigninCompMod.ModuleName,
+  SignupCompMod.ModuleName
+]
 
-let app = angular.module("3nweb", appModuleDependencies);
+let app = angular.module("3nweb", appModuleDependencies)
 
+configApp.$inject = ["$stateProvider", "$urlRouterProvider"]
 
-let APP_DEFAULT_PALETTE = {
-	"background": "grey",
-	"primary": "indigo",
-	"accent": "amber",
-	"warn": "red"
-};
-
-configApp.$inject = [
-  "$mdThemingProvider",
-  "$stateProvider",
-  "$urlRouterProvider"
-];
-
-function configApp($mdThemingProvider: angular.material.IThemingProvider, $stateProvider: angular.ui.IStateProvider, $urlRouterProvider: angular.ui.IUrlRouterProvider): void {
-  
-  /* add user theme */  
-  $mdThemingProvider.theme("myTheme")
-    .primaryPalette(APP_DEFAULT_PALETTE.primary)
-    .accentPalette(APP_DEFAULT_PALETTE.accent)
-    .backgroundPalette(APP_DEFAULT_PALETTE.background)
-    .warnPalette(APP_DEFAULT_PALETTE.warn);
-    
-  $mdThemingProvider.setDefaultTheme("myTheme");
-	(<any>window).mdT = $mdThemingProvider;
+function configApp(
+  $stateProvider: angular.ui.IStateProvider, 
+  $urlRouterProvider: angular.ui.IUrlRouterProvider
+): void {
   
   $stateProvider
-    .state("login", {
-      url: "/login",
-      template: "<sign-in users='$ctrl.users'></sign-in>",
+    .state('signin', {
+      url: '/signin',
+      template: `<sign-in users="$ctrl.users"></sign-in>`,
       resolve: {
-        users: [LoginSrvMod.LoginSrvName, function(loginSrv: LoginSrvMod.LoginSrv) {
-          return loginSrv.readRegisteredUser();
+        users: ['$q', LoginSrvMod.LoginSrvName, function($q: angular.IQService, loginSrv: LoginSrvMod.LoginSrv) {
+          return $q.when(loginSrv.readRegisteredUser())
         }]
       },
-      controller: function(users) {
-        this.users = users;
+      controller: function(users: string[]) {
+        this.users = users
       },
-      controllerAs: "$ctrl"
+      controllerAs: '$ctrl'
     })
-    .state("signup", {
-      url: "/sign-up",
-      template: "<sign-up></sign-up>"
-    });
+    .state('signup', {
+      url: '/signup',
+      template: `<sign-up></sign-up>`
+    })
   
   
-  $urlRouterProvider.otherwise("login");  
+  $urlRouterProvider.otherwise('signin')
   
 }
 
-app.config(configApp);
+app.config(configApp)

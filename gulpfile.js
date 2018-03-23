@@ -4,40 +4,56 @@ const gulp = require("gulp");
 const sass = require("gulp-sass");
 const concatCss = require('gulp-concat-css');
 const sourcemaps = require("gulp-sourcemaps");
-const del = require("del");
+const delMod = require("del");
 const ts = require("gulp-typescript");
-const shell = require("gulp-shell");
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const browser = require("browser-sync");
+const fs = require("fs");
+const rename = require("gulp-rename");
+
+function folderExists(path) {
+	try {
+		return fs.statSync(path).isDirectory();
+	} catch (err) {
+		return false;
+	}
+}
+
+function copy(src, dst, renameArg) {
+	if (renameArg === undefined) {
+		return () => gulp.src(src).pipe(gulp.dest(dst));
+	} else {
+		return () => gulp.src(src).pipe(rename(renameArg)).pipe(gulp.dest(dst));
+	}
+}
+
+function del(paths) {
+	return () => delMod(paths, { force: true });
+}
+
+// app manifest file
+const MANIFEST_FILE = 'manifest.json';
+const manifest = require(`./${MANIFEST_FILE}`);
+
+const APP_FOLDER_NAME = manifest.appDomain.split('.').reverse().join('.');
 
 const BUILD = "./public";
-const ELECTRON = "core-platform-electron/build";
-const APP_FOLDER_NAME = "startup";
+const ELECTRON = "../core-platform-electron";
+const APP_FOLDER = `${ELECTRON}/build/all/apps/${APP_FOLDER_NAME}`;
 
-gulp.task("copy-lib", function() {
-	return gulp.src("./src/lib-ext/**/*.*")
-		.pipe(gulp.dest("./public/lib-ext"));
-});
+gulp.task("copy-lib", copy("./src/lib-ext/**/*.*", "./public/lib-ext"));
 
-gulp.task("del-lib", function() {
-	return del(["./public/lib-ext"]);
-});
+gulp.task("del-lib", del(["./public/lib-ext"]));
 
 gulp.task("copy-html", gulp.series(
-	function() {
-		return gulp.src(["./src/web/**/*.html", "!./src/web/index.html", "./src/web/**/*.png", "./src/web/**/*.jpg", "./src/web/**/*.gif", "./src/web/**/*.svg"])
-			.pipe(gulp.dest("./public/templates"));
-	},
-	function() {
-		return gulp.src("./src/web/index.html")
-			.pipe(gulp.dest("./public"))
-	}
-));
+	copy([
+		"./src/web/**/*.html", "!./src/web/index.html", "./src/web/**/*.png", "./src/web/**/*.jpg", "./src/web/**/*.gif", "./src/web/**/*.svg" ],
+		"./public/templates"),
+	copy("./src/web/index.html", "./public"))
+);
 
-gulp.task("del-html", function() {
-	return del(["./public/templates", "./public/index.html"]);
-});
+gulp.task("del-html", del(["./public/templates", "./public/index.html"]));
 
 gulp.task("styles", function() {
 	return gulp.src("./src/web/**/*.scss")
@@ -53,17 +69,11 @@ gulp.task("concat-css", function () {
 		.pipe(gulp.dest('./public/'));
 });
 
-gulp.task("del-css", function() {
-	return del(["./public/index.css"]);
-});
+gulp.task("del-css", del(["./public/index.css"]));
 
-gulp.task("del-temp", function() {
-	return del(["./temp/"]);
-});
+gulp.task("del-temp", del(["./temp/"]));
 
-gulp.task("del-all", function() {
-	return del(["./public"]);
-});
+gulp.task("del-all", del(["./public"]));
 
 
 gulp.task("tsc", function() {
@@ -73,15 +83,11 @@ gulp.task("tsc", function() {
 });
 
 gulp.task("browserify", gulp.series(
-	function() {
-		return del(["./public/index.js"]);
-	},
-	function() {
-		return browserify("./temp/index.js")
-			.bundle()
-			.pipe(source("index.js"))
-			.pipe(gulp.dest("./public"));
-	}
+	del(["./public/index.js"]),
+	() => browserify("./temp/index.js")
+		.bundle()
+		.pipe(source("index.js"))
+		.pipe(gulp.dest("./public"))
 ));
 
 gulp.task("browser", function() {
@@ -101,22 +107,27 @@ gulp.task("create-html", gulp.series("del-html", "copy-html"));
 gulp.task("create-css", gulp.series("del-css", "styles", "concat-css"));
 gulp.task("create-js", gulp.series("tsc", "browserify"));
 
-gulp.task("to-electron", gulp.series(
-	shell.task(
-	`if [ -d ../${ELECTRON} ]; then
-		if [ ! -d ../${ELECTRON}/apps ]; then
-			mkdir ../${ELECTRON}/apps;
-		fi
-		if [ -d ../${ELECTRON}/apps/${APP_FOLDER_NAME} ]; then
-			rm -rf ../${ELECTRON}/apps/${APP_FOLDER_NAME};
-		fi
-		cp -r ${BUILD} ../${ELECTRON}/apps/${APP_FOLDER_NAME};
-	else
-		echo "Need ${ELECTRON} setup side-by-side for an automated copying to take place.";
-		echo "Still, you may copy content of folder ${BUILD} manually.";
-	fi;`)
-));
-
+function moveToElectronTasks() {
+	if (!folderExists(ELECTRON)) {
+		return done => {
+			console.log(`
+Can't move build into electron-based core build.
+Need ${ELECTRON} setup side-by-side for an automated copying to take place.
+Still, you may copy content of folder ${BUILD} manually.
+`);
+			done();
+		}
+	}
+	let tasks = [];
+	if (folderExists(APP_FOLDER)) {
+		tasks.push(del(APP_FOLDER));
+	}
+	tasks.push(
+		copy(`${BUILD}/**/*`, `${APP_FOLDER}/app`),
+		copy(MANIFEST_FILE, APP_FOLDER));
+	return gulp.series(...tasks);
+}
+gulp.task("to-electron", moveToElectronTasks());
 
 gulp.task("watcher", function() {
 	gulp.watch("./src/web/**/*.scss", gulp.series("create-css"));
