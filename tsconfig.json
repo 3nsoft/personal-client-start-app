@@ -2,15 +2,22 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2017",
-		"lib": [
-			"es2017",
-			"dom"
-		],
+    "lib": [
+        "es2017",
+        "dom"
+    ],
     "removeComments": true,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "baseUrl": "."
   },
+  "include": [
+    "src/**/*",
+    "@types"
+  ],
   "exclude": [
     "node_modules"
   ]

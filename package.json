@@ -1,24 +1,40 @@
 {
   "name": "3n-startup-app",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "3NWeb platform desktop startup app",
   "author": "3NSoft, Inc.",
   "license": "GPL-3.0",
-  "dependencies": {
-    "browser-sync": "2.11.1",
-    "browserify": "^13.0.0",
-    "del": "2.2.0",
-    "gulp-concat-css": "^3.0.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^3.1.0",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-typescript": "^4.0.1",
-    "gulp-uglify": "^2.0.0",
-    "vinyl-source-stream": "^2.0.0",
-    "gulp": "^4.0.0",
-    "typescript": "^2.7.1"
-  },
   "scripts": {
     "gulp": "./node_modules/.bin/gulp"
+  },
+  "dependencies": {
+    "@uirouter/angularjs": "1.0.18",
+    "angular": "1.7.0",
+    "angular-animate": "1.7.0",
+    "angular-aria": "1.7.0",
+    "angular-material": "1.1.9",
+    "angular-messages": "1.7.0",
+    "angular-sanitize": "^1.7.7"
+  },
+  "devDependencies": {
+    "@types/angular": "^1.6.54",
+    "@types/angular-material": "^1.1.64",
+    "browserify": "^16.2.3",
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-concat-css": "^3.1.0",
+    "gulp-if": "^2.0.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-shell": "^0.6.5",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^5.0.0",
+    "gulp-uglify": "^3.0.1",
+    "gulp-uglifycss": "^1.1.0",
+    "node-sass": "^4.11.0",
+    "typescript": "^3.3.3",
+    "uglify-es": "^3.3.9",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
   }
 }

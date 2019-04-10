@@ -1,0 +1,124 @@
+<form class="signin" name="signin">
+  <!-- user list -->
+  <div
+    ng-if="!!$ctrl.selectLogin"
+    class="signin__logo signin__logo-user"
+  >
+    <div class="signin__logo-user--initial">
+      {{ $ctrl.selectLogin.substr(0, 2).toUpperCase() }}
+    </div>
+  </div>
+  <div
+    ng-if="!!$ctrl.selectLogin"
+    class="signin__logo-user--name"
+  >
+    Welcome, <i>{{ $ctrl.selectLogin.split('@')[0] }}</i>
+  </div>
+  <md-input-container
+    md-no-float
+    ng-if="!!$ctrl.selectLogin"
+    class="input__field select__field"
+  >
+    <md-select
+      ng-model="$ctrl.user.login"
+      ng-change="$ctrl.onChange()"
+      aria-label="select login"
+    >
+      <md-option
+        ng-repeat="login in $ctrl.users"
+        ng-value="login"
+      >
+        {{ login }}
+      </md-option>
+    </md-select>
+  </md-input-container>
+
+  <!-- first time -->
+  <div
+    ng-if="!$ctrl.selectLogin"
+    class="signin__logo"
+  >
+      <img ng-src="assets/logo.png">
+  </div>
+  <md-input-container
+    md-no-float
+    ng-if="!$ctrl.selectLogin"
+    class="input__field"
+  >
+    <label>Login</label>
+    <input
+      type="text"
+      placeholder="Enter your login (name@3nweb.com)"
+      name="login"
+      ng-disabled="$ctrl.isWait"
+      ng-model="$ctrl.user.login"
+      ng-keyup="$ctrl.keyEventHandler($event, 'login')"
+    >
+  </md-input-container>
+
+  <!-- password section -->
+  <md-input-container
+    md-no-float
+    class="input__field"
+  >
+    <label>Password</label>
+    <input
+      type="password"
+      placeholder="Enter the password"
+      name="password"
+      ng-disabled="$ctrl.isWait"
+      ng-model="$ctrl.user.password"
+      ng-keyup="$ctrl.keyEventHandler($event, 'password')"
+    >
+  </md-input-container>
+  <div
+    class="signin__action"
+    ng-class="{'signin__action--single': $ctrl.loginEnterMode === 'single'}">
+    <a
+      ng-if="$ctrl.loginEnterMode === 'select'"
+      type="button"
+      class="signin__action-mode-trigger"
+      ng-click="$ctrl.changeEnterMode()">
+      Change account
+    </a>
+    <md-button
+      class="signin__action-btn"
+      ng-disabled="!$ctrl.user.login || !$ctrl.user.password"
+      ng-click="$ctrl.signIn()"
+    >
+      ENTER
+    </md-button>
+  </div>
+  <div
+    ng-if="$ctrl.signinError"
+    class="signin__error"
+  >
+      {{ ::$ctrl.signinError }}
+  </div>
+
+  <div class="signin__registration">
+    <div class="signin__registration--title">
+      Don't have an account? Create!
+    </div>
+    <md-button
+      class="signin__registration--action"
+      ng-click="$ctrl.goToRegistration()"
+    >
+      REGISTRATION
+    </md-button>
+  </div>
+
+  <div
+    ng-if="$ctrl.isWait"
+    class="wait-spinner"
+  >
+    <md-progress-circular
+      md-mode="indeterminate"
+      md-diameter="24"
+    >
+    </md-progress-circular>
+    <div class="wait-spinner__text">
+      {{ $ctrl.waitText }}
+    </div>
+  </div>
+</form>

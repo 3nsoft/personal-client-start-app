@@ -1,0 +1,10 @@
+[
+  {
+    "from": "./node_modules/angular/angular-csp.css",
+    "to": "./public/libs/angular"
+  },
+  {
+    "from": "./node_modules/angular-material/angular-material.min.css",
+    "to": "./public/libs/angular-material"
+  }
+]
